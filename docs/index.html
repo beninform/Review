@@ -6,8 +6,9 @@
     <title>D432 Review</title>
     <link rel="icon" type="image/png" href="http://localhost:3000/img/S-icon-grey.png" id="favicon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src='create-replica-page.js' defer></script>
+    <script src='load-session-responses.js' defer></script>
     <script src='rules/candidate-rules-12-w-eg.js'></script>
+    <script src="https://www.papaparse.com/resources/js/papaparse.js"></script>
     <link href='https://unpkg.com/jspsych/css/jspsych.css' rel='stylesheet' type='text/css'>
     <link href='styles.css' rel='stylesheet' type='text/css'>    
   </head>
@@ -16,6 +17,9 @@
     <div class="jspsych-content-wrapper">
       <div id="jspsych-content" class="jspsych-content">
         <div id="outer-wrapper" class="outer-wrapper">
+          
+
+          <!-- LEFT COLUMN -->
           <div id="preamble-form-wrapper" class="preamble-form-wrapper">
             <div id="jspsych-survey-text-preamble" class="jspsych-survey-text-preamble">
               <div class="trial-countdown-wrapper"> Time remaining: <span id="trial-countdown">02:16</span>
@@ -30,7 +34,6 @@
                 </div>
               </div>
               <div id="image-container" class="image-container">
-                <!-- div id="pls-wait" class="pls-wait">Image loading...</div><img id='bp-img' class="bp-img" src="img/p0002.png" alt="a visual logic problem" style="max-height: 350px; width: auto;"/><img id='bp-img' class="bp-img" src="img/p0002.png" alt="a visual logic problem" style="max-height: 350px; width: auto;"/ -->
                 <img id="pimg" src="img/p0002.png" style="display: block;">
               </div>
             </div>
@@ -38,11 +41,11 @@
               <div class="form-row">
                 <div id="jspsych-survey-text-0" class="jspsych-survey-text-question" style="margin: 2em 0em;">
                   <p class="jspsych-survey-text">Your rule for set A</p>
-                  <textarea id="input-0" name="#jspsych-survey-text-response-0" data-name="a_rule" cols="20" rows="2" autofocus="" required="" placeholder=""></textarea>
+                  <textarea readonly id="input-0" name="#jspsych-survey-text-response-0" data-name="a_rule" cols="20" rows="2" autofocus="" required="" placeholder=""></textarea>
                 </div>
                 <div id="jspsych-survey-text-1" class="jspsych-survey-text-question" style="margin: 2em 0em;">
                   <p class="jspsych-survey-text">Your rule for set B</p>
-                  <textarea id="input-1" name="#jspsych-survey-text-response-1" data-name="b_rule" cols="20" rows="2" required="" placeholder=""></textarea>
+                  <textarea readonly id="input-1" name="#jspsych-survey-text-response-1" data-name="b_rule" cols="20" rows="2" required="" placeholder=""></textarea>
                 </div>
               </div>
               <div class="trial-buttons-container">
@@ -51,6 +54,8 @@
               </div>
             </form>
           </div>
+
+          <!-- RIGHT COLUMN -->
           <div id="instructions-div" class="instructions-div">
             <div class="tab-container">
               <div class="tab-header">
@@ -58,6 +63,10 @@
                 <button class="tab-btn active" type="button">Candidate rules</button>
               </div>
               <div class="tab-content">
+                <div>
+                    <input type="file" class="fileInput" />
+
+                </div>
                 <div class="instruction-box hidden" style="height: 100%; padding-top: 0px;">
                   <p>Your task is to determine two distinct rules, one rule that applies to all diagrams in Set A and one rule that applies to all diagrams in Set B.</p>
                   <p>Click the help button (?) for more information.</p>
@@ -86,37 +95,12 @@
                     <h3>AI-Generated Candidate Rules</h3>
                     <span class="heading-tooltip">AI system responses when provided with the task and images</span>
                   </div>
-                  <table id="rules-table">
-                    <thead>
-                      <tr>
-                        <th>AI rule for set A</th>
-                        <th>AI rule for set B</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td onclick="logCellText(this)">a figure with curved edges</td>
-                        <td onclick="logCellText(this)">a figure with only straight edges</td>
-                      </tr>
-                      <tr>
-                        <td onclick="logCellText(this)">an outlined figure</td>
-                        <td onclick="logCellText(this)">a solid black figure</td>
-                      </tr>
-                      <tr>
-                        <td onclick="logCellText(this)">a figure centred in the frame</td>
-                        <td onclick="logCellText(this)">a figure away from the centre</td>
-                      </tr>
-                      <tr>
-                        <td onclick="logCellText(this)">one large figure</td>
-                        <td onclick="logCellText(this)">one small figure</td>
-                      </tr>
-                      <tr>
-                        <td onclick="logCellText(this)">a convex figure</td>
-                        <td onclick="logCellText(this)">a concave figure</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <div id="toast" class="hidden-toast">copied to clipboard!</div>
+
+                  <!-- <table id="rules-table">
+                  </table> -->
+
+
+                  <!-- <div id="toast" class="hidden-toast">copied to clipboard!</div> -->
                   <div class="eu-label-wrapper">
                     <img src="logos/eu_ai_label.png" alt="EU AI Label" class="eu-ai-img">
                     <span class="eu-label-tooltip">AI generated</span>
@@ -125,6 +109,7 @@
               </div>
             </div>
           </div>
+
           <button id="help-toggle-btn" class="help-btn">?</button>
           <div id="help-popup-box" class="help-popup hidden">
             <!--button type="button" class="help-btn" id="help-toggle-btn">?</button><div class="help-popup hidden" id="help-popup-box" -->
@@ -133,7 +118,9 @@
             <p>You can only use the ‘continue’ button once you have entered text into each of the answer boxes. You can skip if you are really stuck. But you are encouraged not to skip problems. The skip button will only be available after the first ten seconds, so you should try to answer. In any event, you will not be able to skip more than three problems.</p>
             <!--/div-->
           </div>
-        </div>
+
+        </div>   <!--  END OF OUTER WRAPPER -->
+
         <div id="problem-credit-footer" style="position: fixed; bottom: 15px; left: 25px; width: 200px; padding-top: 5px; border-top: 1px solid #a0a0a0; color: #666; text-align: right; font-size: 10pt; z-index: 9999;"> Problem credit: Bongard </div>
       </div>
     </div>
