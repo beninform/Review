@@ -984,3 +984,6 @@ td:hover span.ToolTip{
   margin-bottom: 7px;
 }
 
+.fileInput {
+    width: 100%;
+}

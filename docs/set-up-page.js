@@ -10,6 +10,7 @@ function loadResponses() {
     const taskHead = document.querySelector('h3');
     const inputZro = document.getElementById('input-0');
     const inputOne = document.getElementById('input-1');
+    const trStatus = document.getElementById('trial-status');
     const imageTag = document.getElementById('pimg');
 
     let data = [];
@@ -25,8 +26,8 @@ function loadResponses() {
                 data.push(row.data);
             },
             complete: function(results) {
-                tbody = generateTable(data);
-                // console.log('1', data);
+                tbody = generateTable();
+                // console.log('data', data);
                 const dataLen = data.length;
                 // console.log('dataLen', dataLen);
                 const taskArr = [...Array(dataLen).keys()];
@@ -52,21 +53,36 @@ function loadResponses() {
                 });
 
                 function updateDisplay() {
+                    // console.log('index', index);
                     let taskRsp = data[index]
+                    // console.log('taskRsp', taskRsp);
                     const imageNr = taskRsp.imagenr;  // string BP No
                     const blockId = taskRsp.blockId;
+                    // console.log('taskRsp.response', taskRsp.response);
                     const jsnResp = JSON.parse(taskRsp.response);
-                    const imagNum = parseInt(imageNr);
+                    // console.log('jsnResp', jsnResp);
+                    let imagNum = parseInt(imageNr);
                     const taskNum = imagNum - 1;
                     const srcText = `img/p${imageNr}.png`;
-                    const ruleA = jsnResp['A-rule'];
-                    const ruleB = jsnResp['B-rule'];
-
-                    taskHead.innerText = blockId + ' Task ' + taskNum;
+                    const ruleA = jsnResp['a_rule'];
+                    const ruleB = jsnResp['b_rule'];
+                    const tStat = taskRsp.trial_status;
+                    // console.log('tStat', tStat);
+                    if (blockId == 'Session 0') {
+                        taskHead.innerText = 'Example Task';
+                    } else {
+                        taskHead.innerText = blockId + ' Task ' + taskNum;
+                    }
                     imageTag.src       = srcText;
                     inputZro.innerText = ruleA;
                     inputOne.innerText = ruleB;
+                    // console.log('ruleA', ruleA);
+                    // console.log('ruleB', ruleB);
+                    trStatus.innerText = tStat;
 
+                    if (imagNum==1022) {  // cater for inserted example problem - use eg rule from candidate rules, which is numbered 1
+                        imagNum=1;
+                    }
                     populateTable(imagNum, tbody);
                 }
 
@@ -86,7 +102,8 @@ function populateTable(bongProbNumber, tbody) {
     // get array for this BP's candidate rules
     const data = rulesArray.filter((item) => item.BP == bongProbNumber);    
     // shuffle(data);
-    
+    // console.log('bongProbNumber', bongProbNumber);
+    // console.log('data', data);
     // Guard clause to handle empty arrays safely
     if (!data || data.length === 0) return;
 
@@ -125,7 +142,10 @@ function populateTable(bongProbNumber, tbody) {
 
 
 
-function generateTable(data) {
+function generateTable() {
+    // if rules table exists, drop it
+    rulesTableSelector = '#rules-table';   
+    removeIfExists(rulesTableSelector); 
 
     // Create table elements (excluding regular rows)
     const table = document.createElement('table');
@@ -134,8 +154,7 @@ function generateTable(data) {
     const tbody = document.createElement('tbody');
     const headerRow = document.createElement('tr');
 
-    // Extract and create headers dynamically using keys from the first object
-    const keys = Object.keys(data[0]);  // all seven keys
+    const keys = ['A', 'B'];  // 
     keys.forEach(key => {
         if ( ['A', 'B'].includes(key) ) {
             const th = document.createElement('th');
@@ -143,6 +162,7 @@ function generateTable(data) {
             headerRow.appendChild(th);
         }
     });
+
     thead.appendChild(headerRow);
 
     // Assemble and inject the complete table into the DOM
@@ -154,5 +174,11 @@ function generateTable(data) {
 
     return tbody;
 
+}
+
+
+function removeIfExists (selector) {
+  var x = document.querySelector(selector)
+  if (x) x.remove()
 }
 
