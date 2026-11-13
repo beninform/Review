@@ -95,6 +95,7 @@ function updateDisplay() {
     console.log('taskRsp', taskRsp);
     const imageNr = taskRsp.imagenr;  // string BP No
     const blockId = taskRsp.blockId;
+    const tStat   = taskRsp.trial_status;
     console.log('taskRsp.response', taskRsp.response);
     const jsnResp = JSON.parse(taskRsp.response);
     console.log('jsnResp', jsnResp);
