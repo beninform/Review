@@ -14,7 +14,7 @@ const trStatus = document.getElementById('trial-status');
 let data = [];
 let imgNums = [];
 let index = 0;
-// loadResponses
+
 function loadResponses() {
     const fileInput = document.querySelector('.fileInput');
     fileInput.addEventListener('change', () => {
@@ -32,11 +32,8 @@ function loadResponses() {
             },
             complete: function(results) {
                 tbody = generateTable();
-                // console.log('data', data);
                 const dataLen = data.length;
-                // console.log('dataLen', dataLen);
                 const taskArr = [...Array(dataLen).keys()];
-                // console.log('taskArr', taskArr);
 
                 updateDisplay();
 
@@ -79,8 +76,6 @@ function loadResponses() {
 
 
 function updateDisplay() {
-    // console.log('data', data);  
-    // console.log('data.length', data.length);  
     console.log('raw index', index);
     const dataLen = data.length-2;
     console.log('dataLen', dataLen);
@@ -90,22 +85,16 @@ function updateDisplay() {
     if ( index > dataLen ) {
         index = dataLen;
     }
-    console.log('cleaned index', index);
     let taskRsp = data[index]
-    console.log('taskRsp', taskRsp);
     const imageNr = taskRsp.imagenr;  // string BP No
     const blockId = taskRsp.blockId;
     const tStat   = taskRsp.trial_status;
-    console.log('taskRsp.response', taskRsp.response);
     const jsnResp = JSON.parse(taskRsp.response);
-    console.log('jsnResp', jsnResp);
     let imagNum = parseInt(imageNr);
     const taskNum = imagNum - 1;
     const srcText = `img/p${imageNr}.png`;
-    // console.log('srcText', srcText);
     const ruleA = jsnResp['a_rule'];
     const ruleB = jsnResp['b_rule'];
-    // console.log('tStat', tStat);
     if (blockId == 'Session 0') {
         taskHead.innerText = 'Example Task';
     } else {
@@ -114,8 +103,6 @@ function updateDisplay() {
     imageTag.src       = srcText;
     inputZro.innerText = ruleA;
     inputOne.innerText = ruleB;
-    // console.log('ruleA', ruleA);
-    // console.log('ruleB', ruleB);
     trStatus.innerText = tStat;
 
     if (imagNum==1022) {  // cater for inserted example problem - use eg rule from candidate rules, which is numbered 1
@@ -131,8 +118,7 @@ function populateTable(bongProbNumber, tbody) {
     // get array for this BP's candidate rules
     const data = rulesArray.filter((item) => item.BP == bongProbNumber);    
     // shuffle(data);
-    // console.log('bongProbNumber', bongProbNumber);
-    // console.log('data', data);
+
     // Guard clause to handle empty arrays safely
     if (!data || data.length === 0) return;
 
