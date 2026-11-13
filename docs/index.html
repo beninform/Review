@@ -62,7 +62,6 @@
           <div id="instructions-div" class="instructions-div">
             <div class="tab-container">
               <div class="tab-header">
-                <button class="tab-btn" type="button" style="cursor: pointer;">Instructions</button>
                 <button class="tab-btn active" type="button">Candidate rules</button>
               </div>
               <div class="tab-content">
@@ -93,7 +92,7 @@
                     <span class="ai-tooltip-text">You are given candidate rules for assistance (click the tab above to see them). Note that the candidate rules are AI-generated, so they may contain errors. In particular, there may be one correct rule-pair for each problem. But there could be several, or even none at all, that are correct.</span>
                   </div>
                 </div>
-                <div id="table-container" class="table-container" style="margin-top: 0px; position: relative;">
+                <div id="table-container" class="table-container hidden" style="margin-top: 0px; position: relative;">
                   <div class="heading-tooltip-wrapper">
                     <h3>AI-Generated Candidate Rules</h3>
                     <span class="heading-tooltip">AI system responses when provided with the task and images</span>
@@ -107,14 +106,6 @@
               </div>
             </div>
           </div>
-
-          <button id="help-toggle-btn" class="help-btn">?</button>
-          <div id="help-popup-box" class="help-popup hidden">
-            <p>Complete each answer box. You cannot drag and drop any text from the candidate rules list. You must enter each of your rules into the appropriate box. You can click-to-copy and paste a candidate rule - or type your own.</p>
-            <p>The page shows a ‘time remaining’ countdown timer. This allows you two and a half minutes for each problem. After the time has elapsed, you will be automatically moved on to the next problem. After three such 'timeouts', a further 'timeout' will end your session.</p>
-            <p>You can only use the ‘continue’ button once you have entered text into each of the answer boxes. You can skip if you are really stuck. But you are encouraged not to skip problems. The skip button will only be available after the first ten seconds, so you should try to answer. In any event, you will not be able to skip more than three problems.</p>
-          </div>
-
         </div>   <!--  END OF OUTER WRAPPER -->
 
       </div>

@@ -10,6 +10,14 @@ const imageTag = document.getElementById('pimg');
 const inputZro = document.getElementById('input-0');
 const inputOne = document.getElementById('input-1');
 const trStatus = document.getElementById('trial-status');
+const togglBtn = document.querySelector('.tab-btn');
+const tbContnr = document.getElementById('table-container'); // candidate rules table
+let fileExtn = '';
+
+togglBtn.innerText = 'Toggle';
+togglBtn.addEventListener('click', (e) => {
+    toggleCandidateRules();
+})
 
 let data = [];
 let imgNums = [];
@@ -18,7 +26,23 @@ let index = 0;
 
 function loadResponses() {
     const fileInput = document.querySelector('.fileInput');
-    fileInput.addEventListener('change', () => {
+    fileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        const filename = files[0].name;
+        fileExtn = getExtension(filename)
+        data = [];
+        imgNums = [];
+        tskTims = [];
+        index = 0;
+        if ( fileExtn != 'csv' ) {
+            alert('Cannot use this file! Only csv files!');
+            return
+        } else {
+            sessionType = getSessionType(filename);
+            if ( sessionType == 'wcr' ) {
+                wCandidateRules();
+            }
+        }
         Papa.parse(fileInput.files[0], {
             download: true,
             header: true,
@@ -187,8 +211,7 @@ function generateTable() {
     table.appendChild(thead);
     table.appendChild(tbody);
     
-    const container = document.getElementById('table-container');
-    container.appendChild(table);
+    tbContnr.appendChild(table);
 
     return tbody;
 
@@ -198,5 +221,39 @@ function generateTable() {
 function removeIfExists (selector) {
   var x = document.querySelector(selector)
   if (x) x.remove()
+}
+
+
+function getExtension(filename) {
+  const lastDotIndex = filename.lastIndexOf('.');
+  // Ensure dot exists, is not the first character, and is not the last character
+  if (lastDotIndex > 0 && lastDotIndex < filename.length - 1) {
+    return filename.slice(lastDotIndex + 1);
+  }
+  return '';
+}   
+
+function getSessionType(filename) {
+    const uscoreIdx = filename.indexOf('_');
+    if ( uscoreIdx>0 && uscoreIdx < filename.length - 1) {
+       const sType = filename.slice(uscoreIdx+1,uscoreIdx+4);
+       return sType;
+    } else {
+        return '';
+    }
+}
+
+function toggleCandidateRules() {
+    if ( tbContnr.classList.contains('hidden') ) {
+        if ( fileExtn == 'csv' ) {
+            tbContnr.classList.remove('hidden');
+        }    
+    } else {
+        tbContnr.classList.add('hidden');
+    };    
+}
+
+function wCandidateRules() {
+    tbContnr.classList.remove('hidden');
 }
 
