@@ -13,6 +13,7 @@ const trStatus = document.getElementById('trial-status');
 
 let data = [];
 let imgNums = [];
+let tskTims = [];
 let index = 0;
 
 function loadResponses() {
@@ -28,6 +29,10 @@ function loadResponses() {
                 imgNum = row.data.imagenr;
                 if (imgNum) {
                     imgNums.push(imgNum);
+                }
+                tskTim = row.data.trial_time;
+                if (tskTim) {
+                    tskTims.push(tskTim);
                 }
             },
             complete: function(results) {
@@ -64,11 +69,6 @@ function loadResponses() {
                         gallDiv.style.display = "none";
                     }                    
                 })
-
-
-
-
-
             }     
         });
     });
