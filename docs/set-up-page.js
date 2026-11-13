@@ -37,8 +37,8 @@ function loadResponses() {
             },
             complete: function(results) {
                 tbody = generateTable();
-                const dataLen = data.length;
-                const taskArr = [...Array(dataLen).keys()];
+                const myDataLen = data.length;
+                const taskArr = [...Array(myDataLen).keys()];
 
                 updateDisplay();
 
