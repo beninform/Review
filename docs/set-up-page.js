@@ -76,15 +76,18 @@ function loadResponses() {
 
 
 function updateDisplay() {
-    console.log('raw index', index);
+    // zero-based indexing plus an empty last element in data array
     const dataLen = data.length-2;
-    console.log('dataLen', dataLen);
-    if ( index < 0 ) {
+
+    // constrain the value of index to avoid errors
+    if ( index < 0 ) {  // prevent index errors
         index = 0;
     }
-    if ( index > dataLen ) {
+    if ( index > dataLen ) {  // prevent index errors
         index = dataLen;
     }
+
+    // get the detail of the task at the current index
     let taskRsp = data[index]
     const imageNr = taskRsp.imagenr;  // string BP No
     const blockId = taskRsp.blockId;
