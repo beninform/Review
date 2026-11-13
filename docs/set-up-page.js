@@ -5,16 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+const taskHead = document.querySelector('h3');
+const imageTag = document.getElementById('pimg');
+const inputZro = document.getElementById('input-0');
+const inputOne = document.getElementById('input-1');
+const trStatus = document.getElementById('trial-status');
+
+let data = [];
+let imgNums = [];
+let index = 0;
 // loadResponses
 function loadResponses() {
-    const taskHead = document.querySelector('h3');
-    const inputZro = document.getElementById('input-0');
-    const inputOne = document.getElementById('input-1');
-    const trStatus = document.getElementById('trial-status');
-    const imageTag = document.getElementById('pimg');
-
-    let data = [];
-    let index = 0;
     const fileInput = document.querySelector('.fileInput');
     fileInput.addEventListener('change', () => {
         Papa.parse(fileInput.files[0], {
@@ -24,6 +25,10 @@ function loadResponses() {
             skipEmptyLines: true,
             step: function(row) {
                 data.push(row.data);
+                imgNum = row.data.imagenr;
+                if (imgNum) {
+                    imgNums.push(imgNum);
+                }
             },
             complete: function(results) {
                 tbody = generateTable();
@@ -37,6 +42,8 @@ function loadResponses() {
 
                 prevBtn = document.getElementById('prev-btn');
                 nextBtn = document.getElementById('next-btn');
+                gallBtn = document.getElementById('gall-btn');
+                gallDiv = document.getElementById('gallery');
 
                 prevBtn.addEventListener('click', () => {
                     if (index > 0) {
@@ -52,47 +59,68 @@ function loadResponses() {
                     updateDisplay();
                 });
 
-                function updateDisplay() {
-                    // console.log('index', index);
-                    let taskRsp = data[index]
-                    // console.log('taskRsp', taskRsp);
-                    const imageNr = taskRsp.imagenr;  // string BP No
-                    const blockId = taskRsp.blockId;
-                    // console.log('taskRsp.response', taskRsp.response);
-                    const jsnResp = JSON.parse(taskRsp.response);
-                    // console.log('jsnResp', jsnResp);
-                    let imagNum = parseInt(imageNr);
-                    const taskNum = imagNum - 1;
-                    const srcText = `img/p${imageNr}.png`;
-                    const ruleA = jsnResp['a_rule'];
-                    const ruleB = jsnResp['b_rule'];
-                    const tStat = taskRsp.trial_status;
-                    // console.log('tStat', tStat);
-                    if (blockId == 'Session 0') {
-                        taskHead.innerText = 'Example Task';
+                gallBtn.addEventListener('click', () => {
+                    loadGallery(imgNums);
+                    if (gallDiv.style.display === "none") {
+                        gallDiv.style.display = "grid";
                     } else {
-                        taskHead.innerText = blockId + ' Task ' + taskNum;
-                    }
-                    imageTag.src       = srcText;
-                    inputZro.innerText = ruleA;
-                    inputOne.innerText = ruleB;
-                    // console.log('ruleA', ruleA);
-                    // console.log('ruleB', ruleB);
-                    trStatus.innerText = tStat;
-
-                    if (imagNum==1022) {  // cater for inserted example problem - use eg rule from candidate rules, which is numbered 1
-                        imagNum=1;
-                    }
-                    populateTable(imagNum, tbody);
-                }
+                        gallDiv.style.display = "none";
+                    }                    
+                })
 
 
 
 
 
-            }        
+            }     
         });
     });
+}
+
+
+function updateDisplay() {
+    // console.log('data', data);  
+    // console.log('data.length', data.length);  
+    console.log('raw index', index);
+    const dataLen = data.length-2;
+    console.log('dataLen', dataLen);
+    if ( index < 0 ) {
+        index = 0;
+    }
+    if ( index > dataLen ) {
+        index = dataLen;
+    }
+    console.log('cleaned index', index);
+    let taskRsp = data[index]
+    console.log('taskRsp', taskRsp);
+    const imageNr = taskRsp.imagenr;  // string BP No
+    const blockId = taskRsp.blockId;
+    console.log('taskRsp.response', taskRsp.response);
+    const jsnResp = JSON.parse(taskRsp.response);
+    console.log('jsnResp', jsnResp);
+    let imagNum = parseInt(imageNr);
+    const taskNum = imagNum - 1;
+    const srcText = `img/p${imageNr}.png`;
+    // console.log('srcText', srcText);
+    const ruleA = jsnResp['a_rule'];
+    const ruleB = jsnResp['b_rule'];
+    // console.log('tStat', tStat);
+    if (blockId == 'Session 0') {
+        taskHead.innerText = 'Example Task';
+    } else {
+        taskHead.innerText = blockId + ' Task ' + taskNum;
+    }
+    imageTag.src       = srcText;
+    inputZro.innerText = ruleA;
+    inputOne.innerText = ruleB;
+    // console.log('ruleA', ruleA);
+    // console.log('ruleB', ruleB);
+    trStatus.innerText = tStat;
+
+    if (imagNum==1022) {  // cater for inserted example problem - use eg rule from candidate rules, which is numbered 1
+        imagNum=1;
+    }
+    populateTable(imagNum, tbody);
 }
 
 

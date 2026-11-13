@@ -987,3 +987,61 @@ td:hover span.ToolTip{
 .fileInput {
     width: 100%;
 }
+
+.card {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  background: #ffffff;
+  padding: 0px;
+  /*border-radius: 8px;*/
+  /*box-shadow: 0 2px 6px rgba(0,0,0,0.1);*/
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+.card img {
+  height: 180px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+.card span {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin: 0px;
+}
+
+#gallery {
+  position: absolute;
+  bottom: 20px;
+  display: block;
+  width: 100%;
+  z-index: 2;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+.img-container {
+  display: flex;
+  gap: 4rem;                  /* Space between images */
+  overflow-x: auto;           /* Enables horizontal scrolling */
+  scroll-behavior: smooth;
+  padding-bottom: 2rem;       /* Space between images and scrollbar */
+}
+
+.img-container img {
+  flex: 0 0 auto;             /* Prevents images from shrinking to fit the screen */
+  height: 115px;              /* Set your desired image height */
+  object-fit: cover;          /* Crops images cleanly without distortion */
+}
+
+
+
+
+
+
+

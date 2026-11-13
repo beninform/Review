@@ -6,6 +6,7 @@
     <title>D432 Review</title>
     <link rel="icon" type="image/png" href="http://localhost:3000/img/S-icon-grey.png" id="favicon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src='gallery.js' defer></script>
     <script src='set-up-page.js' defer></script>
     <script src='rules/candidate-rules-12-w-eg.js'></script>
     <script src="https://www.papaparse.com/resources/js/papaparse.js"></script>
@@ -49,6 +50,7 @@
               <div class="trial-buttons-container">
                 <button type="button" id="next-btn" class="jspsych-btn">next</button>
                 <button type="button" id="prev-btn" class="jspsych-btn">prev</button>
+                <button type="button" id="gall-btn" class="jspsych-btn">gall</button>
               </div>
               <div id="trial-status">
               </div>
@@ -121,10 +123,11 @@
 
         </div>   <!--  END OF OUTER WRAPPER -->
 
-        <div id="problem-credit-footer" style="position: fixed; bottom: 15px; left: 25px; width: 200px; padding-top: 5px; border-top: 1px solid #a0a0a0; color: #666; text-align: right; font-size: 10pt; z-index: 9999;"> Problem credit: Bongard </div>
       </div>
     </div>
-    <div id="cb-cursor-tooltip" class="cursor-tooltip" style="display: none;">Please enter a solution in both answer boxes first.</div>
+    <div id="gallery" style="display: none;">
+      <div class='img-container'></div>
+    </div>   
     <footer class="narrow-footer" id="contact-footer">problems/feedback: b.j.m.wilson@swansea.ac.uk</footer>
   </body>
 </html>
