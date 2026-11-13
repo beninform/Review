@@ -42,7 +42,7 @@ function loadGallery(imgNums) {
     img.loading = 'lazy'; // Improves scrolling performance for large lists
 
     const label = document.createElement('span');
-    label.textContent = `${ixx} ${taskNo}`;
+    label.textContent = `${taskNo}`;
 
     link.appendChild(img);
     link.appendChild(label);
