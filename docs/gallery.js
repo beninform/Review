@@ -29,7 +29,7 @@ function loadGallery(imgNums) {
     // link.href = `view.html?id=${encodeURIComponent(id)}`;
     link.onclick = ()=>{
     	console.log('clicked', ixx, taskNo)
-    	gallDiv.style.display = 'none';
+    	// gallDiv.style.display = 'none';
       index = ixx;
       updateDisplay();
     };

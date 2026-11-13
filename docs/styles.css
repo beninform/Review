@@ -487,8 +487,7 @@
 .trial-buttons-container {
     display: flex;
     gap: 20px;
-    margin-top: 20px;
-    max-width: 300px;
+    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -1007,7 +1006,7 @@ td:hover span.ToolTip{
 .card img {
   height: 180px;
   object-fit: contain;
-  margin-bottom: 12px;
+  /*margin-bottom: 12px;*/
 }
 .card span {
   font-weight: bold;
