@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	loadResponses();
 });
 
+const X_TO_GET = 5;  // how many nearest to the key value to get for stats buttons
+
 
 const taskHead = document.querySelector('h3');
 const imageTag = document.getElementById('pimg');
@@ -12,17 +14,23 @@ const inputOne = document.getElementById('input-1');
 const trStatus = document.getElementById('trial-status');
 const togglBtn = document.querySelector('.tab-btn');
 const tbContnr = document.getElementById('table-container'); // candidate rules table
-let fileExtn = '';
+const tabContr = document.querySelector('.tab-container');  // container of the tab controls (rules and instructions) 
+const gallDiv = document.getElementById('gallery');
+
 
 togglBtn.innerText = 'Toggle';
 togglBtn.addEventListener('click', (e) => {
     toggleCandidateRules();
 })
 
+const statsButtons = setUpStatsButtons();
+
 let data = [];
 let imgNums = [];
+let tskNums = [];
 let tskTims = [];
 let index = 0;
+let fileExtn = '';
 
 function loadResponses() {
     const fileInput = document.querySelector('.fileInput');
@@ -32,6 +40,7 @@ function loadResponses() {
         fileExtn = getExtension(filename)
         data = [];
         imgNums = [];
+        tskNums = [];
         tskTims = [];
         index = 0;
         if ( fileExtn != 'csv' ) {
@@ -53,23 +62,26 @@ function loadResponses() {
                 imgNum = row.data.imagenr;
                 if (imgNum) {
                     imgNums.push(imgNum);
+                    tskNum = parseInt(imgNum)-1;
+                    tskNums.push(tskNum);
                 }
                 tskTim = row.data.trial_time;
                 if (tskTim) {
-                    tskTims.push(tskTim);
+                    tskTims.push(parseInt(tskTim));
                 }
             },
             complete: function(results) {
+                tskNums.shift(); // remove the first (eg) task number (has no time)
                 tbody = generateTable();
                 const myDataLen = data.length;
                 const taskArr = [...Array(myDataLen).keys()];
 
-                updateDisplay();
+                calcStats(tskTims);  // also adds click to stat buttons
+                updateDisplay();  // changes the displayed task, user responses and rules
 
                 prevBtn = document.getElementById('prev-btn');
                 nextBtn = document.getElementById('next-btn');
                 gallBtn = document.getElementById('gall-btn');
-                gallDiv = document.getElementById('gallery');
 
                 prevBtn.addEventListener('click', () => {
                     if (index > 0) {
@@ -255,5 +267,157 @@ function toggleCandidateRules() {
 
 function wCandidateRules() {
     tbContnr.classList.remove('hidden');
+}
+
+
+function getNearestXToValInArr(valueIn, arrayIn, X_TO_GET) {
+    // local copy of magic number of values to get for each key stat in timing
+    const x_to_get = X_TO_GET;
+
+    // a new array with each element having three values: value, index, distance
+    const indexedArr = arrayIn.map((value, index) => ({
+        value,
+        index,
+        distance: Math.abs(value - valueIn)
+    }));    
+
+    // the new array sorted by distance from the valueIn
+    indexedArr.sort((a, b) => a.distance - b.distance)
+
+    // the X entries with the shortest distance from valueIn (the closest)
+    const newArr = indexedArr.slice(0, x_to_get);
+    console.log('newArr', newArr);
+
+    // the original index values of the X closest
+    const idxArr = newArr.map(item => item.index);
+
+    // the original task numbers of the X with timings closest to valueIn
+    return idxArr.map(index => tskNums[index]);
+
+
+}
+
+function setUpStatsButtons() {
+
+    // create five buttons for five stats points in the distribution of times
+    const minBtn = document.createElement('button');
+    const lQ_Btn = document.createElement('button');
+    const medBtn = document.createElement('button');
+    const uQ_Btn = document.createElement('button');
+    const maxBtn = document.createElement('button');
+
+    minBtn.id = 'min-btn';
+    lQ_Btn.id = 'loq-btn';
+    medBtn.id = 'med-btn';
+    uQ_Btn.id = 'upq-btn';
+    maxBtn.id = 'max-btn';
+
+    minBtn.classList.add('jspsych-btn');
+    lQ_Btn.classList.add('jspsych-btn');
+    medBtn.classList.add('jspsych-btn');
+    uQ_Btn.classList.add('jspsych-btn');
+    maxBtn.classList.add('jspsych-btn');
+
+    minBtn.innerText = 'min';
+    lQ_Btn.innerText = 'LQ';
+    medBtn.innerText = 'median';
+    uQ_Btn.innerText = 'UQ';
+    maxBtn.innerText = 'max';
+
+    const statsBtnsDiv = document.createElement('div');
+    statsBtnsDiv.setAttribute('class', 'stats-button-div');
+
+    statsBtnsDiv.appendChild(minBtn);
+    statsBtnsDiv.appendChild(lQ_Btn);
+    statsBtnsDiv.appendChild(medBtn);
+    statsBtnsDiv.appendChild(uQ_Btn);
+    statsBtnsDiv.appendChild(maxBtn);
+
+    tabContr.appendChild(statsBtnsDiv);   
+
+    return [minBtn, lQ_Btn, medBtn, uQ_Btn, maxBtn]; 
+}
+
+
+function showRelatedGallery(task_array) {
+    const imgNums3 = taskNumsToImgNums(task_array);
+    loadGallery(imgNums3);
+    if (gallDiv.style.display === "none") {
+        gallDiv.style.display = "grid";
+    } else {
+        gallDiv.style.display = "none";
+    }      
+}
+
+
+function taskNumsToImgNums(task_array) {
+    const imgNums2 = []
+    task_array.forEach(tasknumber =>{
+        taskString = (tasknumber+1).toString();
+        imgNumber = ('00'+taskString).substring(-4);
+        imgNums2.push(imgNumber);
+    })
+    return imgNums2;
+}
+
+
+function calcStats(tskTims) {
+    // local copy of magic number of values to get for each key stat in timing
+    const x_to_get = X_TO_GET;
+
+    if ( tskTims.length > 0 ) {
+        const myLen = tskTims.length;
+        const myMin  = Math.min(...tskTims);
+        const myMax  = Math.max(...tskTims);
+
+        const mymean = ss.mean(tskTims);
+        const stdDev = ss.standardDeviation(tskTims);
+
+        const lQ = ss.quantile(tskTims, 0.25); 
+        const median = ss.median(tskTims);
+        const uQ = ss.quantile(tskTims, 0.75); 
+
+        // give X task numbers around each key stat timing
+
+        const tsksNrstToMedian = getNearestXToValInArr(median, tskTims, x_to_get);
+        console.log('ToMedian', median.toFixed(1), tsksNrstToMedian);
+
+        const tsksNrstToMin = getNearestXToValInArr(myMin, tskTims, x_to_get);
+        console.log('ToMin', myMin.toFixed(1), tsksNrstToMin);
+
+        const tsksNrstToMax = getNearestXToValInArr(myMax, tskTims, x_to_get);
+        console.log('ToMax', myMax.toFixed(1), tsksNrstToMax);
+
+        const tsksNrstToLQ = getNearestXToValInArr(lQ, tskTims, x_to_get);
+        console.log('ToLQ', lQ.toFixed(1), tsksNrstToLQ);
+
+        const tsksNrstToUQ = getNearestXToValInArr(uQ, tskTims, x_to_get);
+        console.log('ToUQ', uQ.toFixed(1), tsksNrstToUQ);
+
+        console.log('myLen', myLen);
+
+
+        statsButtons[0].addEventListener('click', (e)=>{
+            showRelatedGallery(tsksNrstToMin);
+        });
+
+        statsButtons[1].addEventListener('click', (e)=>{
+            showRelatedGallery(tsksNrstToLQ);
+        });
+
+        statsButtons[2].addEventListener('click', (e)=>{
+            showRelatedGallery(tsksNrstToMedian);
+        });
+
+        statsButtons[3].addEventListener('click', (e)=>{
+            showRelatedGallery(tsksNrstToUQ);
+        });
+
+        statsButtons[4].addEventListener('click', (e)=>{
+            showRelatedGallery(tsksNrstToMax);
+        });
+
+        // return [myMin, lQ, median, uQ, myMax]
+    } 
 }
 

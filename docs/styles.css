@@ -764,6 +764,7 @@ input[type=text]:focus {
 
 
 #rules-table td {
+    font-size: 16px;
     height: 60px;
     padding: 2%;
     position: relative;
@@ -1012,6 +1013,7 @@ td:hover span.ToolTip{
   font-weight: bold;
   font-size: 1.1rem;
   margin: 0px;
+  margin-bottom: -20px;
 }
 
 #gallery {
@@ -1038,7 +1040,17 @@ td:hover span.ToolTip{
   object-fit: cover;          /* Crops images cleanly without distortion */
 }
 
+.stats-button-div {
+  margin-top: -70px;
+  display: flex;
+  flex-direction: row; 
+  align-items: center;
+  justify-content: center;
+}
 
+.stats-button-div button {
+    min-width: 65px;
+}
 
 
 
