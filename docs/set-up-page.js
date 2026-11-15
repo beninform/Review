@@ -6,17 +6,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const X_TO_GET = 5;  // how many nearest to the key value to get for stats buttons
 
-
 const taskHead = document.querySelector('h3');
 const imageTag = document.getElementById('pimg');
 const inputZro = document.getElementById('input-0');
 const inputOne = document.getElementById('input-1');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const gallBtn = document.getElementById('gall-btn');
 const trStatus = document.getElementById('trial-status');
 const togglBtn = document.querySelector('.tab-btn');
 const tbContnr = document.getElementById('table-container'); // candidate rules table
 const tabContr = document.querySelector('.tab-container');  // container of the tab controls (rules and instructions) 
 const gallDiv = document.getElementById('gallery');
-
+const countDiv = document.getElementById('task-count-display');
 
 togglBtn.innerText = 'Toggle';
 togglBtn.addEventListener('click', (e) => {
@@ -25,11 +27,13 @@ togglBtn.addEventListener('click', (e) => {
 
 const statsButtons = setUpStatsButtons();
 
+//  declare globals
 let data = [];
 let imgNums = [];
 let tskNums = [];
 let tskTims = [];
 let skpTsks = [];
+let taskArr = [];
 let index = 0;
 let fileExtn = '';
 
@@ -39,11 +43,14 @@ function loadResponses() {
         const files = e.target.files;
         const filename = files[0].name;
         fileExtn = getExtension(filename)
+
+        // re-initialise globals for new file
         data = [];
         imgNums = [];
         tskNums = [];
         tskTims = [];
         skpTsks = [];
+        taskArr = [];
         index = 0;
         if ( fileExtn != 'csv' ) {
             alert('Cannot use this file! Only csv files!');
@@ -81,44 +88,45 @@ function loadResponses() {
             complete: function(results) {
                 tskNums.shift(); // remove the first (eg) task number (has no time)
                 tbody = generateTable();
+
+                // taskArr is used for prev-next buttons (includes eg task)
                 const myDataLen = data.length;
-                const taskArr = [...Array(myDataLen).keys()];
+                taskArr = [...Array(myDataLen).keys()];
+                console.log(taskArr.length);
+
+                // display total task count (excludes eg task)
+                const tskLen = tskNums.length;
+                countDiv.innerText = tskLen;
+
 
                 calcStats(tskTims);  // also adds click to stat buttons
                 doSkipArray(skpTsks);  // adds click to skip button
                 updateDisplay();  // changes the displayed task, user responses and rules
-
-                prevBtn = document.getElementById('prev-btn');
-                nextBtn = document.getElementById('next-btn');
-                gallBtn = document.getElementById('gall-btn');
-
-                prevBtn.addEventListener('click', () => {
-                    if (index > 0) {
-                        index--;
-                    }
-                    updateDisplay();
-                });
-
-                nextBtn.addEventListener('click', () => {
-                    if (index < taskArr.length - 1) {
-                        index++;
-                    }
-                    updateDisplay();
-                });
-
-                gallBtn.addEventListener('click', () => {
-                    loadGallery(imgNums);
-                    if (gallDiv.style.display === "none") {
-                        gallDiv.style.display = "grid";
-                    } else {
-                        gallDiv.style.display = "none";
-                    }                    
-                })
             }     
         });
     });
 }
 
+prevBtn.addEventListener('click', () => {
+  if (taskArr.length === 0) return;
+  index = Math.max(0, index - 1);
+  updateDisplay();
+});
+
+nextBtn.addEventListener('click', () => {
+  if (taskArr.length === 0) return; 
+  index = Math.min(taskArr.length - 1, index + 1);
+  updateDisplay();
+});
+
+gallBtn.addEventListener('click', () => {
+    loadGallery(imgNums);
+    if (gallDiv.style.display === "none") {
+        gallDiv.style.display = "grid";
+    } else {
+        gallDiv.style.display = "none";
+    }                    
+})
 
 function updateDisplay() {
     // zero-based indexing plus an empty last element in data array
@@ -377,12 +385,12 @@ function calcStats(tskTims) {
     const x_to_get = X_TO_GET;
 
     if ( tskTims.length > 0 ) {
-        const myLen = tskTims.length;
+        // const myLen = tskTims.length;
         const myMin  = Math.min(...tskTims);
         const myMax  = Math.max(...tskTims);
 
-        const mymean = ss.mean(tskTims);
-        const stdDev = ss.standardDeviation(tskTims);
+        // const mymean = ss.mean(tskTims);
+        // const stdDev = ss.standardDeviation(tskTims);
 
         const lQ = ss.quantile(tskTims, 0.25); 
         const median = ss.median(tskTims);
@@ -405,7 +413,7 @@ function calcStats(tskTims) {
         const tsksNrstToUQ = getNearestXToValInArr(uQ, tskTims, x_to_get);
         // console.log('ToUQ', uQ.toFixed(1), tsksNrstToUQ);
 
-        console.log('Total count of tasks', myLen);  // consider showing on screen (by filename?)
+        // console.log('Total count of tasks', myLen);  // consider showing on screen (by filename?)
 
 
         statsButtons[0].addEventListener('click', (e)=>{
@@ -433,6 +441,7 @@ function calcStats(tskTims) {
 
 function doSkipArray(skpTsks) {
     statsButtons[5].addEventListener('click', (e)=>{
+        if (skpTsks.length === 0) return;         
         showRelatedGallery(skpTsks);
     });    
 }

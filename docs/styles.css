@@ -1053,6 +1053,22 @@ td:hover span.ToolTip{
 }
 
 
+#file-input-container {
+  display: flex;
+  align-items: center; 
+  gap: 12px;           
+  max-width: 100%;     
+}
+
+.fileInput {
+  flex: 1; 
+  min-width: 0; 
+}
+
+#task-count-display {
+  flex-shrink: 0;      
+  white-space: nowrap; 
+}
 
 
 

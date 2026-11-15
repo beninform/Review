@@ -19,6 +19,7 @@ function loadGallery(imgNums) {
     const link = document.createElement('a');
     link.onclick = ()=>{
       index = ixx;
+      console.log('g22 index', index);
       updateDisplay();
     };
 
