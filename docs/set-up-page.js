@@ -67,7 +67,11 @@ function loadResponses() {
             keepEmptyRows: false,
             skipEmptyLines: true,
             step: function(row) {
-                data.push(row.data);
+                if ( row.data ) {
+                    if ( row.data.imagenr ) {
+                        data.push(row.data);                           
+                    }         
+                }
                 const imgNum = row.data.imagenr;
                 if (imgNum) {
                     imgNums.push(imgNum);
@@ -92,7 +96,6 @@ function loadResponses() {
                 // taskArr is used for prev-next buttons (includes eg task)
                 const myDataLen = data.length;
                 taskArr = [...Array(myDataLen).keys()];
-                console.log(taskArr.length);
 
                 // display total task count (excludes eg task)
                 const tskLen = tskNums.length;
@@ -129,13 +132,13 @@ gallBtn.addEventListener('click', () => {
 })
 
 function updateDisplay() {
-    // zero-based indexing plus an empty last element in data array
-    const dataLen = data.length-2;
+    const dataLen = data.length-1;
 
     // constrain the value of index to avoid errors
     if ( index < 0 ) {  // prevent index errors
         index = 0;
     }
+
     if ( index > dataLen ) {  // prevent index errors
         index = dataLen;
     }
