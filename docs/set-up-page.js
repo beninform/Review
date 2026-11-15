@@ -29,6 +29,7 @@ let data = [];
 let imgNums = [];
 let tskNums = [];
 let tskTims = [];
+let skpTsks = [];
 let index = 0;
 let fileExtn = '';
 
@@ -42,6 +43,7 @@ function loadResponses() {
         imgNums = [];
         tskNums = [];
         tskTims = [];
+        skpTsks = [];
         index = 0;
         if ( fileExtn != 'csv' ) {
             alert('Cannot use this file! Only csv files!');
@@ -59,15 +61,21 @@ function loadResponses() {
             skipEmptyLines: true,
             step: function(row) {
                 data.push(row.data);
-                imgNum = row.data.imagenr;
+                const imgNum = row.data.imagenr;
                 if (imgNum) {
                     imgNums.push(imgNum);
                     tskNum = parseInt(imgNum)-1;
                     tskNums.push(tskNum);
                 }
-                tskTim = row.data.trial_time;
+                const tskTim = row.data.trial_time;
                 if (tskTim) {
                     tskTims.push(parseInt(tskTim));
+                }
+                const tskStt = row.data.trial_status;
+                if (tskStt) {
+                    if ( tskStt.slice(0,3) == 'Ski' ) {
+                        skpTsks.push(tskNum); // capture skipped tasks
+                    }
                 }
             },
             complete: function(results) {
@@ -77,6 +85,7 @@ function loadResponses() {
                 const taskArr = [...Array(myDataLen).keys()];
 
                 calcStats(tskTims);  // also adds click to stat buttons
+                doSkipArray(skpTsks);  // adds click to skip button
                 updateDisplay();  // changes the displayed task, user responses and rules
 
                 prevBtn = document.getElementById('prev-btn');
@@ -286,15 +295,12 @@ function getNearestXToValInArr(valueIn, arrayIn, X_TO_GET) {
 
     // the X entries with the shortest distance from valueIn (the closest)
     const newArr = indexedArr.slice(0, x_to_get);
-    console.log('newArr', newArr);
 
     // the original index values of the X closest
     const idxArr = newArr.map(item => item.index);
 
     // the original task numbers of the X with timings closest to valueIn
     return idxArr.map(index => tskNums[index]);
-
-
 }
 
 function setUpStatsButtons() {
@@ -305,24 +311,28 @@ function setUpStatsButtons() {
     const medBtn = document.createElement('button');
     const uQ_Btn = document.createElement('button');
     const maxBtn = document.createElement('button');
+    const skiBtn = document.createElement('button');
 
     minBtn.id = 'min-btn';
     lQ_Btn.id = 'loq-btn';
     medBtn.id = 'med-btn';
     uQ_Btn.id = 'upq-btn';
     maxBtn.id = 'max-btn';
+    skiBtn.id = 'ski-btn';
 
     minBtn.classList.add('jspsych-btn');
     lQ_Btn.classList.add('jspsych-btn');
     medBtn.classList.add('jspsych-btn');
     uQ_Btn.classList.add('jspsych-btn');
     maxBtn.classList.add('jspsych-btn');
+    skiBtn.classList.add('jspsych-btn');
 
-    minBtn.innerText = 'min';
+    minBtn.innerText = 'Min';
     lQ_Btn.innerText = 'LQ';
-    medBtn.innerText = 'median';
+    medBtn.innerText = 'Median';
     uQ_Btn.innerText = 'UQ';
-    maxBtn.innerText = 'max';
+    maxBtn.innerText = 'Max';
+    skiBtn.innerText = 'Skips';
 
     const statsBtnsDiv = document.createElement('div');
     statsBtnsDiv.setAttribute('class', 'stats-button-div');
@@ -332,10 +342,11 @@ function setUpStatsButtons() {
     statsBtnsDiv.appendChild(medBtn);
     statsBtnsDiv.appendChild(uQ_Btn);
     statsBtnsDiv.appendChild(maxBtn);
+    statsBtnsDiv.appendChild(skiBtn);
 
     tabContr.appendChild(statsBtnsDiv);   
 
-    return [minBtn, lQ_Btn, medBtn, uQ_Btn, maxBtn]; 
+    return [minBtn, lQ_Btn, medBtn, uQ_Btn, maxBtn, skiBtn]; 
 }
 
 
@@ -380,21 +391,21 @@ function calcStats(tskTims) {
         // give X task numbers around each key stat timing
 
         const tsksNrstToMedian = getNearestXToValInArr(median, tskTims, x_to_get);
-        console.log('ToMedian', median.toFixed(1), tsksNrstToMedian);
+        // console.log('ToMedian', median.toFixed(1), tsksNrstToMedian);
 
         const tsksNrstToMin = getNearestXToValInArr(myMin, tskTims, x_to_get);
-        console.log('ToMin', myMin.toFixed(1), tsksNrstToMin);
+        // console.log('ToMin', myMin.toFixed(1), tsksNrstToMin);
 
         const tsksNrstToMax = getNearestXToValInArr(myMax, tskTims, x_to_get);
-        console.log('ToMax', myMax.toFixed(1), tsksNrstToMax);
+        // console.log('ToMax', myMax.toFixed(1), tsksNrstToMax);
 
         const tsksNrstToLQ = getNearestXToValInArr(lQ, tskTims, x_to_get);
-        console.log('ToLQ', lQ.toFixed(1), tsksNrstToLQ);
+        // console.log('ToLQ', lQ.toFixed(1), tsksNrstToLQ);
 
         const tsksNrstToUQ = getNearestXToValInArr(uQ, tskTims, x_to_get);
-        console.log('ToUQ', uQ.toFixed(1), tsksNrstToUQ);
+        // console.log('ToUQ', uQ.toFixed(1), tsksNrstToUQ);
 
-        console.log('myLen', myLen);
+        console.log('Total count of tasks', myLen);  // consider showing on screen (by filename?)
 
 
         statsButtons[0].addEventListener('click', (e)=>{
@@ -416,8 +427,12 @@ function calcStats(tskTims) {
         statsButtons[4].addEventListener('click', (e)=>{
             showRelatedGallery(tsksNrstToMax);
         });
-
-        // return [myMin, lQ, median, uQ, myMax]
     } 
 }
 
+
+function doSkipArray(skpTsks) {
+    statsButtons[5].addEventListener('click', (e)=>{
+        showRelatedGallery(skpTsks);
+    });    
+}
